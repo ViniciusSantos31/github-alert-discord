@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
+import axios from 'axios';
 import { formatEvent } from './format';
 import { getInputs, Inputs, statusOptions } from "./inputs";
 
@@ -11,9 +12,32 @@ async function run() {
 
     core.info('Gerando payload...');
     const payload = getPayload(inputs);
+    const payloadStr = JSON.stringify(payload, null, 2)
+
+    await Promise.all(inputs.webhooks.map(webhook =>
+      wrapWebhook(webhook.trim(), payload)
+    ));
+
+    core.setOutput('payload', payloadStr);
   } catch (error) {
-    core.error(error);
+    core.error(error as Error);
   }
+}
+
+function wrapWebhook(webhook: string, payload: Object): Promise<void> {
+  return async function () {
+    try {
+      await axios.post(webhook, payload);
+    } catch (e: any) {
+      if (e.response) {
+        core.error(`Webhook response: 
+          ${e.response.status}: ${JSON.stringify(e.response.data)}`
+        );
+      } else {
+        core.error(e);
+      }
+    }
+  }()
 }
 
 export function getPayload(inputs: Readonly<Inputs>): Object { 
