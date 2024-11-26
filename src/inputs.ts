@@ -3,7 +3,6 @@ import * as core from '@actions/core';
 export interface Inputs {
   webhooks: string[];
   status: string;
-  content: string;
   description: string;
   title: string;
   color?: number;
@@ -39,7 +38,6 @@ export function getInputs(): Inputs {
   const inputs: Inputs = {
     webhooks,
     status: core.getInput('status'),
-    content: core.getInput('content'),
     description: core.getInput('description'),
     title: core.getInput('title'),
     color: statusOptions[core.getInput('status')].color,

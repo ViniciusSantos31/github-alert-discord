@@ -1,0 +1,26 @@
+name: "Actions Status Discord"
+description: "Post Github Actions CI status to Discord"
+author: "Vinicius"
+
+inputs:
+  webhook:
+    description: "Discord webhook endpoint. If not set, env.DISCORD_WEBHOOK will be used."
+    required: false
+  status:
+    description: "Job status. Should be bound to job.status. Default to success."
+    required: false
+    default: ${{ job.status }}
+  username:
+    description: "Overrides Discord webhook username"
+    required: false
+  avatar_url:
+    description: "Overrides Discord webhook avatar url"
+    required: false
+
+outputs:
+  payload:
+    description: "Discord webhook payload"
+
+runs:
+  using: "node20"
+  main: "lib/main.js"

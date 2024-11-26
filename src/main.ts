@@ -40,6 +40,22 @@ function wrapWebhook(webhook: string, payload: Object): Promise<void> {
   }()
 }
 
+function genContent(): string { 
+  
+  const ctx = github.context;
+
+  const { eventName, actor } = ctx;
+
+  if (eventName === "pull_request") {
+    const { action, number, pull_request } = ctx.payload;
+    const prUrl = `${pull_request?.html_url}/files`;
+
+    return `${action} PR #${number} - (${prUrl}) by ${actor}`;
+  }
+  
+  return "";
+};
+
 export function getPayload(inputs: Readonly<Inputs>): Object { 
   
   const ctx = github.context;
@@ -54,16 +70,17 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
 
   const eventFieldTitle = `Evento - ${eventName}`;
   const eventDetail = formatEvent(eventName, payload);
+  const content = genContent();
 
   let embed: { [key: string]: any } = {
-    color: statusOptions[inputs.status].color,
+    color: statusOptions[inputs.status]?.color,
     timestamp: new Date().toISOString(),
     title: inputs.title,
     url: inputs.url,
     fields: [
       { 
         name: 'Repositório', 
-        value: `[${repo}](${repoUrl})`, 
+        value: `[${owner}/${repo}](${repoUrl})`, 
         inline: true 
       },
       { 
@@ -95,7 +112,7 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
   };
 
   let discord_payload: any = {
-    content: inputs.content,
+    content: content,
     username: inputs.username,
     avatar_url: inputs.avatar_url,
     embeds: [embed],
