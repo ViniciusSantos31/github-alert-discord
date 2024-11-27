@@ -16,7 +16,7 @@ export function getPullRequestFormat(ctx: Context): Object {
     title: actionOption[eventName]?.title || eventName,
     url: payload.pull_request?.html_url,
     description:
-      `A new pull request has been **${action}** in \`${repo}\` by [${payload.pull_request?.user.login}](${payload.pull_request?.user.html_url})`,
+      `A new pull request has been **${payload.action}** in \`${repo}\` by [${payload.pull_request?.user.login}](${payload.pull_request?.user.html_url})`,
     fields: [
       {
         name: "Repository",
