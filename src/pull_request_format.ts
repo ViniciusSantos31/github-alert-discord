@@ -12,11 +12,11 @@ export function getPullRequestFormat(ctx: Context): Object {
 
   let embed: { [key: string]: any } = {
     color: actionColors[payload.action ?? "opened"] || 0x000000,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date(payload.pull_request?.created_at).toISOString(),
     title: "Pull request",
     url: payload.pull_request?.html_url,
     description:
-      `A pull request has been **${payload.action}** in **\`${repo}\`** by [${payload.pull_request?.user.login}](${payload.pull_request?.user.html_url})`,
+      `A pull request has been **${payload.action}** in **\`${repo}\`** by [${payload.sender?.login}](${payload.sender?.html_url})`,
     fields: [
       {
         name: "Repository",
