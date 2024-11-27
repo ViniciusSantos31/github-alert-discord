@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
+import { Context } from '@actions/github/lib/context';
 import axios from 'axios';
 import { formatEvent } from './format';
 import { getInputs, Inputs, statusOptions } from "./inputs";
@@ -40,10 +41,8 @@ function wrapWebhook(webhook: string, payload: Object): Promise<void> {
   }()
 }
 
-function genContent(): string { 
+function genContent(ctx: Context): string { 
   
-  const ctx = github.context;
-
   const { eventName, actor } = ctx;
 
   if (eventName === "pull_request") {
@@ -70,7 +69,7 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
 
   const eventFieldTitle = `Evento - ${eventName}`;
   const eventDetail = formatEvent(eventName, payload);
-  const content = genContent();
+  const content = genContent(ctx);
 
   let embed: { [key: string]: any } = {
     color: statusOptions[inputs.status]?.color,
