@@ -11,8 +11,9 @@ interface StatusOption {
   color: number;
 }
 
-export const actionOption: Record<string, StatusOption> = {
-  pull_request: { title: 'Pull Request', color: 5814783 },
+export const actionColors: Record<string, number> = {
+  opened: 5814783,
+  closed: 16731469,
 };
 
 export function getInputs(): Inputs {
