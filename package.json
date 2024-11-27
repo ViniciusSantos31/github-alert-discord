@@ -1,16 +1,17 @@
 {
   "name": "github-alert-discord",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --build"
+    "build": "ncc build -o lib --minify src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@vercel/ncc": "^0.38.3",
     "typescript": "^5.7.2"
   },
   "dependencies": {

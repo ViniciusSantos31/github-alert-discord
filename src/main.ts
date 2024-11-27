@@ -49,10 +49,6 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
   const { eventName, payload, serverUrl } = ctx;
 
   const repoUrl = `${serverUrl}/${owner}/${repo}`;
-  // const workflowUrl = `${repoUrl}/actions/runs/${runId}`;
-
-  // const eventFieldTitle = `Evento - ${eventName}`;
-  // const eventDetail = formatEvent(eventName, payload);
 
   const request_reviewers: Array<{ login: string, avatar_url: string }> = payload.pull_request
     ?.requested_reviewers;
