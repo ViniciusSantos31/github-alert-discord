@@ -20,3 +20,9 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+      - name: Upload lib as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: lib
+          path: lib/
