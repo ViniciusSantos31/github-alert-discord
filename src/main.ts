@@ -1,10 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-import { Context } from '@actions/github/lib/context';
 import axios from 'axios';
-import { formatEvent } from './format';
-import { getInputs, Inputs, statusOptions } from "./inputs";
+import { actionOption, getInputs, Inputs } from "./inputs";
 
 async function run() {
   try {
@@ -13,13 +11,13 @@ async function run() {
 
     core.info('Gerando payload...');
     const payload = getPayload(inputs);
-    const payloadStr = JSON.stringify(payload, null, 2)
-
-    core.info(`Payload gerado: ${payloadStr}`,);
+    const payloadStr = JSON.stringify(payload, null, 2);
 
     await Promise.all(inputs.webhooks.map(webhook =>
       wrapWebhook(webhook.trim(), payload)
     ));
+
+    console.log(payloadStr);
 
     core.setOutput('payload', payloadStr);
   } catch (error) {
@@ -48,58 +46,51 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
   const ctx = github.context;
   const { owner, repo } = ctx.repo;
 
-  const { eventName, ref, workflow, actor, payload, serverUrl, runId } = ctx;
+  const { eventName, payload, serverUrl } = ctx;
 
   const repoUrl = `${serverUrl}/${owner}/${repo}`;
-  const workflowUrl = `${repoUrl}/actions/runs/${runId}`;
+  // const workflowUrl = `${repoUrl}/actions/runs/${runId}`;
 
   core.debug(JSON.stringify(payload));
 
-  const eventFieldTitle = `Evento - ${eventName}`;
-  const eventDetail = formatEvent(eventName, payload);
-  const content = genContent(ctx);
+  // const eventFieldTitle = `Evento - ${eventName}`;
+  // const eventDetail = formatEvent(eventName, payload);
+
+  const request_reviewers: Array<{ login: string, avatar_url: string }> = payload.pull_request
+    ?.requested_reviewers;
 
   let embed: { [key: string]: any } = {
-    color: statusOptions[inputs.status]?.color,
+    color: actionOption[eventName].color || 0x000000,
     timestamp: new Date().toISOString(),
-    title: inputs.title,
-    url: inputs.url,
+    title: actionOption[eventName]?.title || eventName,
+    url: payload.pull_request?.html_url,
     fields: [
-      { 
-        name: 'Repositório', 
-        value: `[${owner}/${repo}](${repoUrl})`, 
-        inline: true 
-      },
-      { 
-        name: 'Branch', 
-        value: ref, 
-        inline: true 
-      },
-      { 
-        name: 'Workflow', 
-        value: `[${workflow}](${workflowUrl})`, 
-        inline: true 
-      },
-      { 
-        name: 'Status', 
-        value: statusOptions[inputs.status].status, 
-        inline: true 
+      {
+        name: "Repository",
+        value: `[${repo}](${repoUrl})`,
       },
       {
-        name: 'Autor',
-        value: actor,
+        name: "PR Description",
+        value: payload.pull_request?.body || "No description",
+      },
+      {
+        name: "Reviewers",
+        value: request_reviewers
+          .map(reviewer => `[${reviewer.login}](${reviewer.avatar_url})`)
+          .join(", "),
         inline: true
       },
-      { 
-        name: eventFieldTitle, 
-        value: eventDetail, 
-        inline: false 
+      {
+        name: "Link to PR",
+        value:
+          `[${payload.pull_request?.title ?? "Pull request link"}](${payload.pull_request?.html_url})`,
+        inline: true
       }
     ]
   };
 
   let discord_payload: any = {
-    content: content,
+    content: "Content",
     username: inputs.username,
     avatar_url: inputs.avatar_url,
     embeds: [embed],
@@ -107,19 +98,5 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
   
   return discord_payload;
 }
-
-function genContent(ctx: Context): string { 
-  
-  const { eventName, actor } = ctx;
-
-  if (eventName === "pull_request") {
-    const { action, number, pull_request } = ctx.payload;
-    const prUrl = `${pull_request?.html_url}/files`;
-
-    return `${action} PR #${number} - (${prUrl}) by ${actor}`;
-  }
-  
-  return "Mensagem default";
-};
 
 run();

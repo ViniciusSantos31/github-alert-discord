@@ -2,25 +2,17 @@ import * as core from '@actions/core';
 
 export interface Inputs {
   webhooks: string[];
-  status: string;
-  description: string;
-  title: string;
-  color?: number;
-  url: string;
   username: string;
   avatar_url: string;
 }
 
 interface StatusOption {
-  status: string;
+  title: string;
   color: number;
 }
 
-export const statusOptions: Record<string, StatusOption> = {
-  success: { status: 'Success', color: 0x2ecc71 },
-  failure: { status: 'Failure', color: 0xe74c3c },
-  cancelled: { status: 'Cancelled', color: 0xf39c12 },
-  neutral: { status: 'Neutral', color: 0x95a5a6 },
+export const actionOption: Record<string, StatusOption> = {
+  pull_request: { title: 'New Pull Request', color: 0x2ecc71 },
 };
 
 export function getInputs(): Inputs {
@@ -37,11 +29,6 @@ export function getInputs(): Inputs {
 
   const inputs: Inputs = {
     webhooks,
-    status: core.getInput('status'),
-    description: core.getInput('description'),
-    title: core.getInput('title'),
-    color: statusOptions[core.getInput('status')].color,
-    url: core.getInput('url'),
     username: core.getInput('username'),
     avatar_url: core.getInput('avatar_url'),
   }
