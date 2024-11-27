@@ -14,11 +14,10 @@ async function run() {
     const payloadStr = JSON.stringify(payload, null, 2);
 
     core.debug(JSON.stringify(payload));
-    
+
     await Promise.all(inputs.webhooks.map(webhook =>
       wrapWebhook(webhook.trim(), payload)
     ));
-
 
     core.setOutput('payload', payloadStr);
   } catch (error) {
@@ -59,7 +58,7 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
     ?.requested_reviewers;
 
   let embed: { [key: string]: any } = {
-    color: actionOption[eventName].color || 0x000000,
+    color: 0x000000,
     timestamp: new Date().toISOString(),
     title: actionOption[eventName]?.title || eventName,
     url: payload.pull_request?.html_url,
