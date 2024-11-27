@@ -4,7 +4,7 @@ import { actionOption } from "./inputs";
 export function getPullRequestFormat(ctx: Context): Object {
 
   const { owner, repo } = ctx.repo;
-  const { eventName, payload, serverUrl, action } = ctx;
+  const { eventName, payload, serverUrl } = ctx;
   const repoUrl = `${serverUrl}/${owner}/${repo}`;
 
   const request_reviewers: Array<{ login: string, avatar_url: string }> = payload.pull_request
@@ -16,7 +16,7 @@ export function getPullRequestFormat(ctx: Context): Object {
     title: actionOption[eventName]?.title || eventName,
     url: payload.pull_request?.html_url,
     description:
-      `A new pull request has been **${payload.action}** in \`${repo}\` by [${payload.pull_request?.user.login}](${payload.pull_request?.user.html_url})`,
+      `A pull request has been **${payload.action}** in **\`${repo}\`** by [${payload.pull_request?.user.login}](${payload.pull_request?.user.html_url})`,
     fields: [
       {
         name: "Repository",
@@ -33,24 +33,36 @@ export function getPullRequestFormat(ctx: Context): Object {
           .join(", ") : `[Click to add reviewers](${payload.pull_request?.html_url})`,
         inline: true
       },
-      {
-        name: "Link to PR",
-        value:
-          `[#${payload.pull_request?.number} ${payload.pull_request?.title ?? "Pull request link"}](${payload.pull_request?.html_url})`,
-        inline: true
-      }
+      // {
+      //   name: "Link to PR",
+      //   value:
+      //     `[#${payload.pull_request?.number} ${payload.pull_request?.title ?? "Pull request link"}](${payload.pull_request?.html_url})`,
+      //   inline: true
+      // }
     ],
     footer: {
       text: `Requested by ${payload.pull_request?.user.login}`,
       icon_url: payload.pull_request?.user.avatar_url
     },
+    components: [{
+      type: 1,
+      components: [
+        {
+          type: 2,
+          style: 5,
+          label: "Go to PR",
+          custom_id: "go_to_pr",
+          url: payload.pull_request?.html_url,
+        },
+      ]
+    }]
   };
   
   const discord_payload = {
     username: "GitHub Action",
     avatar_url:
       "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-    embeds: [embed]
+    embeds: [embed],
   };
   
   return discord_payload;

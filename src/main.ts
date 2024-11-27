@@ -14,12 +14,11 @@ async function run() {
     const payload = getPayload(inputs);
     const payloadStr = JSON.stringify(payload, null, 2);
 
-    core.info(payloadStr);
-
+    core.info('Sending payload to webhook...');
     await Promise.all(inputs.webhooks.map(webhook =>
       wrapWebhook(webhook.trim(), payload)
     ));
-
+    
     core.setOutput('payload', payloadStr);
   } catch (error) {
     core.error(error as Error);
@@ -45,15 +44,9 @@ function wrapWebhook(webhook: string, payload: Object): Promise<void> {
 export function getPayload(inputs: Readonly<Inputs>): Object { 
   
   const ctx = github.context;
-  const { owner, repo } = ctx.repo;
 
-  const { eventName, payload, serverUrl, action } = ctx;
+  const { eventName } = ctx;
 
-  const repoUrl = `${serverUrl}/${owner}/${repo}`;
-
-  const request_reviewers: Array<{ login: string, avatar_url: string }> = payload.pull_request
-    ?.requested_reviewers;
-  
   let embed: { [key: string]: any } = {};
 
   if (eventName === 'pull_request') { 

@@ -12,7 +12,7 @@ interface StatusOption {
 }
 
 export const actionOption: Record<string, StatusOption> = {
-  pull_request: { title: 'New Pull Request', color: 0x2ecc71 },
+  pull_request: { title: 'Pull Request', color: 5814783 },
 };
 
 export function getInputs(): Inputs {
