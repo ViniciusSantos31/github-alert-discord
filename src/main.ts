@@ -58,7 +58,7 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
     ?.requested_reviewers;
 
   let embed: { [key: string]: any } = {
-    color: 0x000000,
+    color: 5814783,
     timestamp: new Date().toISOString(),
     title: actionOption[eventName]?.title || eventName,
     url: payload.pull_request?.html_url,
