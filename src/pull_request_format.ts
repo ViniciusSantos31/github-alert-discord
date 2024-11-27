@@ -26,20 +26,24 @@ export function getPullRequestFormat(ctx: Context): Object {
         name: "PR Description",
         value: payload.pull_request?.body || "No description",
       },
-      (request_reviewers?.length && {
+      {
         name: "Reviewers",
-        value: request_reviewers
+        value: request_reviewers?.length ? request_reviewers
           .map(reviewer => `[${reviewer.login}](${reviewer.avatar_url})`)
-          .join(", "),
+          .join(", ") : `[Click to add reviewers](${payload.pull_request?.html_url})`,
         inline: true
-      }),
+      },
       {
         name: "Link to PR",
         value:
           `[#${payload.pull_request?.number} ${payload.pull_request?.title ?? "Pull request link"}](${payload.pull_request?.html_url})`,
         inline: true
       }
-    ]
+    ],
+    footer: {
+      text: `Requested by ${payload.pull_request?.user.login}`,
+      icon_url: payload.pull_request?.user.avatar_url
+    },
   };
   
   const discord_payload = {
