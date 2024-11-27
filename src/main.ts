@@ -15,6 +15,8 @@ async function run() {
     const payload = getPayload(inputs);
     const payloadStr = JSON.stringify(payload, null, 2)
 
+    core.info(`Payload gerado: ${payloadStr}`,);
+
     await Promise.all(inputs.webhooks.map(webhook =>
       wrapWebhook(webhook.trim(), payload)
     ));
