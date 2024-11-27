@@ -41,20 +41,6 @@ function wrapWebhook(webhook: string, payload: Object): Promise<void> {
   }()
 }
 
-function genContent(ctx: Context): string { 
-  
-  const { eventName, actor } = ctx;
-
-  if (eventName === "pull_request") {
-    const { action, number, pull_request } = ctx.payload;
-    const prUrl = `${pull_request?.html_url}/files`;
-
-    return `${action} PR #${number} - (${prUrl}) by ${actor}`;
-  }
-  
-  return "";
-};
-
 export function getPayload(inputs: Readonly<Inputs>): Object { 
   
   const ctx = github.context;
@@ -119,5 +105,19 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
   
   return discord_payload;
 }
+
+function genContent(ctx: Context): string { 
+  
+  const { eventName, actor } = ctx;
+
+  if (eventName === "pull_request") {
+    const { action, number, pull_request } = ctx.payload;
+    const prUrl = `${pull_request?.html_url}/files`;
+
+    return `${action} PR #${number} - (${prUrl}) by ${actor}`;
+  }
+  
+  return "Mensagem default";
+};
 
 run();
