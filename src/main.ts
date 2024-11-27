@@ -13,11 +13,12 @@ async function run() {
     const payload = getPayload(inputs);
     const payloadStr = JSON.stringify(payload, null, 2);
 
+    core.debug(JSON.stringify(payload));
+    
     await Promise.all(inputs.webhooks.map(webhook =>
       wrapWebhook(webhook.trim(), payload)
     ));
 
-    console.log(payloadStr);
 
     core.setOutput('payload', payloadStr);
   } catch (error) {
@@ -50,8 +51,6 @@ export function getPayload(inputs: Readonly<Inputs>): Object {
 
   const repoUrl = `${serverUrl}/${owner}/${repo}`;
   // const workflowUrl = `${repoUrl}/actions/runs/${runId}`;
-
-  core.debug(JSON.stringify(payload));
 
   // const eventFieldTitle = `Evento - ${eventName}`;
   // const eventDetail = formatEvent(eventName, payload);

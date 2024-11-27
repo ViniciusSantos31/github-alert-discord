@@ -6,10 +6,6 @@ inputs:
   webhook:
     description: "Discord webhook endpoint. If not set, env.DISCORD_WEBHOOK will be used."
     required: false
-  status:
-    description: "Job status. Should be bound to job.status. Default to success."
-    required: false
-    default: ${{ job.status }}
   username:
     description: "Overrides Discord webhook username"
     required: false
